@@ -1,0 +1,22 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import MsgBox from '@/components/MsgBox.astro'
+
+const siteUrl = Astro.site?.href
+const siteHostname = Astro.site?.hostname
+---
+<Layout title="Verified" noindex=:true>
+  <main class="flex flex-center">
+    <MsgBox>
+      <h1>404 | File not found</h1>
+      <p>Sorry, the page you are looking for does not exist.</p>
+      <p>back to <a href={siteUrl} title={siteHostname}>{siteHostname}</a></p>
+    </MsgBox>
+  </main>
+</Layout>
+
+<style>
+  main {
+    height: 100vh;
+  }
+</style>

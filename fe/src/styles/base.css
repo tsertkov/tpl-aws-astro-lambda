@@ -1,0 +1,18 @@
+html,
+body {
+  color: #000;
+}
+
+html {
+  font-family: system-ui, sans-serif;
+  background-color: rgb(var(--bg-1));
+}
+
+body {
+  background-image: var(--bg-gradient);
+}
+
+@page {
+  size: A4 landscape;
+  margin: 0;
+}

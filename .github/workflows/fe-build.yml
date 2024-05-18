@@ -1,0 +1,43 @@
+name: 'fe : build'
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'fe/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'fe/**'
+
+jobs:
+  build-fe:
+    name: fe-${{ inputs.env || 'stg' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            config.json
+            Makefile
+            fe
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: fe/package-lock.json
+          node-version-file: fe/package.json
+      - name: Init dependencies
+        run: make fe-init-test
+      - name: Build frontend
+        run: make fe-build ENV=${{ inputs.env || 'stg' }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fe
+          path: fe/dist

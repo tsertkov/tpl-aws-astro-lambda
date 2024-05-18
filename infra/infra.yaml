@@ -1,0 +1,281 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  ProjectName:
+    Type: String
+    MinLength: 2
+  DomainName:
+    Type: String
+    MinLength: 4
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+  AcmCertificate:
+    Type: String
+    Default: ''
+  ErrorResponseFileKey:
+    Type: String
+    Default: 404.html
+  SslProtocolVersion:
+    Type: String
+    Default: TLSv1.2_2021
+  CloudFrontHostedZoneId:
+    Type: String
+    Default: Z2FDTNDATAQYW2
+  WithDebug:
+    Type: String
+    Default: false
+    AllowedValues:
+      - true
+      - false
+  WithBasicAuth:
+    Type: String
+    Default: false
+    AllowedValues:
+      - true
+      - false
+  BasicAuthUsername:
+    Type: String
+    Default: ''
+    NoEcho: true
+  BasicAuthPassword:
+    Type: String
+    Default: ''
+    NoEcho: true
+  LogsRetentionInDays:
+    Type: Number
+  GithubTokenSub:
+    Type: String
+    MinLength: 2
+
+Resources:
+  CDRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !ImportValue GitHubOidcArn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Ref GithubTokenSub
+      Policies:
+        - PolicyName: CDPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:GetObject
+                Resource:
+                  - !Sub arn:aws:s3:::${WebBucket}/*
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub arn:aws:s3:::${WebBucket}
+              - Effect: Allow
+                Action:
+                  - cloudfront:CreateInvalidation
+                Resource: '*'
+  ViewerRequestFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub '${ProjectName}-viewer-request'
+      AutoPublish: true
+      FunctionConfig:
+        Comment: viewer-request
+        Runtime: cloudfront-js-2.0
+      FunctionCode: !Sub
+        - |
+          function handler(event) {
+            const withDebug = ${WithDebug}
+
+            // log event in debug mode
+            if (withDebug) console.log(JSON.stringify(event, null, 2))
+
+            // init config vars
+            const withBasicAuth = ${WithBasicAuth}
+            const authstring = '${authstring}'
+
+            // init request vars
+            const request = event.request
+            const uri = request.uri
+
+            // basic auth
+            if (withBasicAuth) {
+              const expectedAuth = 'Basic ' + authstring
+              if (!request.headers.authorization || request.headers.authorization.value !== expectedAuth) {
+                return {
+                  statusCode: 401,
+                  statusDescription: 'Unauthorized',
+                  headers: {
+                    'www-authenticate': {
+                      value: 'Basic realm="Protected"',
+                    },
+                  },
+                }
+              }
+            }
+
+            // clean urls
+            if (uri.endsWith('/')) {
+              request.uri += 'index.html'
+            } else if (!uri.substring(uri.lastIndexOf('/')).includes('.')) {
+              request.uri += '.html'
+            }
+
+            return request
+          }
+        - authstring: !Base64
+            Fn::Join:
+              - ':'
+              - - !Ref BasicAuthUsername
+                - !Ref BasicAuthPassword
+  OAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub '${ProjectName}-OAI'
+  LogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Status: Enabled
+            ExpirationInDays: !Ref LogsRetentionInDays
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+  WebBucket:
+    Type: AWS::S3::Bucket
+  WebBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+            Principal:
+              AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${OAI}'
+            Resource:
+              - !Sub
+                - '${arn}/*'
+                - arn: !GetAtt WebBucket.Arn
+  CachePolicyCachingForever:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Comment: CachingForever
+        DefaultTTL: 31536000
+        MaxTTL: 31536000
+        MinTTL: 31536000
+        Name: !Sub '${AWS::StackName}-forever'
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          CookiesConfig:
+            CookieBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+  CachePolicyCachingOptimized:
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Comment: CachingOptimized
+        DefaultTTL: 86400
+        MaxTTL: 31536000
+        MinTTL: 1
+        Name: !Sub '${AWS::StackName}-optimized'
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingBrotli: true
+          EnableAcceptEncodingGzip: true
+          CookiesConfig:
+            CookieBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
+          HeadersConfig:
+            HeaderBehavior: none
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: True
+        Comment: !Ref DomainName
+        HttpVersion: http2and3
+        Aliases:
+          - !Ref DomainName
+        Logging:
+          IncludeCookies: false
+          Bucket: !GetAtt LogsBucket.DomainName
+        CacheBehaviors:
+          - Compress: true
+            PathPattern: /_assets/*
+            SmoothStreaming: false
+            TargetOriginId: !Ref DomainName
+            ViewerProtocolPolicy: redirect-to-https
+            CachePolicyId: !Ref CachePolicyCachingForever
+            ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03
+            FunctionAssociations:
+              - EventType: viewer-request
+                FunctionARN: !GetAtt ViewerRequestFunction.FunctionMetadata.FunctionARN
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          Compress: True
+          TargetOriginId: !Ref DomainName
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: !Ref CachePolicyCachingOptimized
+          ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt ViewerRequestFunction.FunctionMetadata.FunctionARN
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: !Sub '/${ErrorResponseFileKey}'
+        ViewerCertificate:
+          AcmCertificateArn: !Sub arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/${AcmCertificate}
+          MinimumProtocolVersion: !Ref SslProtocolVersion
+          SslSupportMethod: sni-only
+        Origins:
+          - Id: !Ref DomainName
+            DomainName: !GetAtt WebBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${OAI}'
+  DnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Type: A
+      Name: !Ref DomainName
+      HostedZoneId: !Ref HostedZoneId
+      AliasTarget:
+        DNSName: !GetAtt Distribution.DomainName
+        HostedZoneId: !Ref CloudFrontHostedZoneId
+
+Outputs:
+  WebBucket:
+    Value: !Ref WebBucket
+    Description: S3 Bucket name holding website static files
+  LogsBucket:
+    Value: !Ref LogsBucket
+    Description: S3 Bucket name holding CloudFront access logs
+  Distribution:
+    Value: !Ref Distribution
+    Description: CloudFront distribution id serving website
+  DomainName:
+    Value: !Ref DomainName
+    Description: Website domain name
+  CDRoleArn:
+    Value: !GetAtt CDRole.Arn

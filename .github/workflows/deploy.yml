@@ -1,0 +1,39 @@
+name: ': deploy'
+run-name: Deploy to ${{ inputs.env || 'stg' }}
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        required: true
+        type: choice
+        default: stg
+        options:
+          - stg
+          - prd
+  push:
+    branches:
+      - main
+    paths:
+      - 'fe/**'
+
+concurrency:
+  group: ${{ inputs.env || 'stg' }}
+  cancel-in-progress: true
+
+jobs:
+  fe-build:
+    name: Build
+    uses: ./.github/workflows/fe-build.yml
+    with:
+      env: ${{ inputs.env || 'stg' }}
+  fe-deploy:
+    name: Deploy
+    uses: ./.github/workflows/fe-deploy.yml
+    needs: fe-build
+    with:
+      env: ${{ inputs.env || 'stg' }}

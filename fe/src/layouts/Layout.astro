@@ -1,0 +1,81 @@
+---
+import '@/styles/vendor/preflight.css'
+import '@/styles/base.css'
+import '@/styles/utilities.css'
+import favicon from '@/assets/favicon.svg'
+import config from '@/../astro.config.mjs'
+
+interface Props {
+  title: string
+  noindex: boolean
+}
+
+const {
+  title,
+  noindex = false
+} = Astro.props
+
+// assemble copyright years period
+const copyrightYears = ((copyrightYearStart) => {
+  const currentYear = (new Date()).getFullYear()
+  return copyrightYearStart === currentYear
+    ? currentYear
+    : `${copyrightYearStart} - ${currentYear}`
+})(2024)
+
+// render debug version label for non-production environments
+const lblDebugVersion = config.custom.env !== 'prd'
+  ? `${config.custom.env}`
+  : ''
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=1" />
+    <title>{title} | tpl-aws-astro</title>
+    <meta name="description" content="tpl-aws-awstro template repository" />
+    { noindex && <meta name="robots" content="noindex" /> }
+    <link rel="icon" type="image/svg+xml" href={favicon.src} />
+  </head>
+  <!-- tabindex enables hover on tap on iOS Safari -->
+  <body tabindex="0">
+    <slot />
+    <footer>
+      <div class="left">&copy; {copyrightYears} tpl-aws-astro</div>
+      <div class="right">{lblDebugVersion}</div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+:root {
+  --bg-1: hsl(183, 69%, 45%); /* Turquoise Blue */
+  --bg-2: hsl(44, 98%, 58%); /* Bright Saffron */
+  --bg-3: hsl(9, 100%, 64%);  /* Tomato */
+  --bg-gradient: linear-gradient(135deg, var(--bg-1), var(--bg-2) 64%, var(--bg-3) 100%);
+}
+
+  footer {
+    display: flex;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 0 6px 2px 6px;
+    font-weight: 300;
+    font-size: 12px;
+    color: #fff;
+  }
+
+  .left {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .right {
+    flex-grow: 1;
+    text-align: right;
+  }
+</style>

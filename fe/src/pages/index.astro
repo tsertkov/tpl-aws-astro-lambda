@@ -1,0 +1,31 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import MsgBox from '@/components/MsgBox.astro'
+import config from '../../astro.config.mjs'
+
+const siteUrl = Astro.site?.href
+const siteHostname = Astro.site?.hostname
+
+const {
+  env,
+} = config.custom
+---
+
+<Layout title="Hello world!">
+  <main class="flex flex-center">
+    <MsgBox classNames={['whitebox']}>
+      <h1>tpl-aws-astro</h1>
+      <ul>
+        <li>SiteUrl: <a href={siteUrl} title={siteHostname}>{siteUrl}</a></li>
+        <li>SiteHostname: {siteHostname}</li>
+        <li>Environment: {env}</li>
+      </ul>
+    </MsgBox>
+  </main>
+</Layout>
+
+<style>
+  main {
+    height: 100vh;
+  }
+</style>

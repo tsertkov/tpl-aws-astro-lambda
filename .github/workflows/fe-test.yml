@@ -1,0 +1,35 @@
+name: 'fe : test'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'fe/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'fe/**'
+
+jobs:
+  test-fe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            config.json
+            Makefile
+            fe
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: fe/package-lock.json
+          node-version-file: fe/package.json
+      - name: Init dependencies
+        run: make fe-init-test
+      - name: Run tests
+        run: make fe-test
+      - name: Test build run
+        run: make fe-build
