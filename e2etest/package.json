@@ -1,0 +1,26 @@
+{
+    "name": "@tpl-aws-astro-lambda/e2etest",
+    "type": "module",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "npm run cy:run",
+        "cy:run": "cypress run",
+        "cy:open": "cypress open",
+        "prettier:fix": "prettier --write .",
+        "eslint:fix": "eslint --fix .",
+        "test:prettier": "prettier --check .",
+        "test:eslint": "eslint .",
+        "test": "npm run test:prettier && npm run test:eslint",
+        "format": "npm run prettier:fix && npm run eslint:fix"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "dependencies": {
+        "cypress": "^13.9.0"
+    },
+    "devDependencies": {
+        "eslint": "^9.3.0",
+        "prettier": "^3.2.5"
+    }
+}

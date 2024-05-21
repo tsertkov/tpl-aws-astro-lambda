@@ -1,0 +1,33 @@
+name: 'e2etest : test'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'e2etest/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'e2etest/**'
+
+jobs:
+  test-e2etest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            e2etest
+            Makefile
+            config.json
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: e2etest/package-lock.json
+          node-version-file: e2etest/package.json
+      - name: 'Test e2etest'
+        run: |
+          make e2etest-init-test
+          make e2etest-test

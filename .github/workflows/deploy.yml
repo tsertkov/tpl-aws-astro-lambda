@@ -37,3 +37,9 @@ jobs:
     needs: fe-build
     with:
       env: ${{ inputs.env || 'stg' }}
+  e2e-test:
+    name: Test
+    uses: ./.github/workflows/e2etest-run.yml
+    needs: fe-deploy
+    with:
+      env: ${{ inputs.env || 'stg' }}

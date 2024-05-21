@@ -1,5 +1,5 @@
 {
-  "projectName": "tpl-aws-astro",
+  "projectName": "tpl-aws-astro-lambda",
   "certificateDomain": "alekswrite.com",
   "default": {
     "region": "eu-central-1",

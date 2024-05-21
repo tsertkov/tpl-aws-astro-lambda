@@ -1,0 +1,49 @@
+name: 'e2etest - run'
+run-name: Run e2etest for ${{ inputs.env || 'stg' }}
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        default: stg
+        type: string
+  workflow_dispatch:
+    inputs:
+      env:
+        required: true
+        default: stg
+        type: choice
+        options:
+          - stg
+          - prd
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'e2etest/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'e2etest/**'
+
+jobs:
+  run-e2etest:
+    name: e2etest-${{ inputs.env || 'stg' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            e2etest
+            Makefile
+            config.json
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: e2etest/package-lock.json
+          node-version-file: e2etest/package.json
+      - name: 'Run e2etest'
+        run: |
+          make e2etest-init
+          make e2etest-run ENV=${{ inputs.env || 'stg' }}
