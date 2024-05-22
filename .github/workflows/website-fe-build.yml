@@ -6,6 +6,10 @@ on:
       env:
         required: true
         type: string
+      version:
+        description: Version to build
+        type: string
+        required: true
   pull_request:
     branches: ['main']
     paths:
@@ -36,7 +40,7 @@ jobs:
       - name: Init dependencies
         run: make website-fe-init-test
       - name: Build frontend
-        run: make website-fe-build ENV=${{ inputs.env || 'stg' }}
+        run: make website-fe-build ENV=${{ inputs.env || 'stg' }} VERSION=${{ inputs.version || 'dev' }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
