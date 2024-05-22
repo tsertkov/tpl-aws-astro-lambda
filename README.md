@@ -79,11 +79,25 @@ Run `make` in your terminal:
 ```sh
 make
 # Available targets:
-#   deploy - Build & deploy infrastructure and frontend
-#   fe-%   - Frontend (fe) targets
-#   infra-% - Infrastructure (infra) targets
+#   api-% - API targets
+#   infra-% - Infra targets
+#   website-% - Website targets
+#   e2etest-% - E2Etest targets
+#   apitest-% - APItest targets
+#   deployer-% - Deployer targets
 
-make fe
+make deployer
+# Available targets:
+#   image - build deployer image
+#   infra - deploy infrastructure
+#   infra-lint - lint infrastructure templates
+
+make website
+# Available targets:
+#   fe-% - Frontend targets
+#   infra-% - Infrastructure targets
+
+make website-fe
 # Available targets:
 #   build - build frontend
 #   deploy - deploy frontend
@@ -93,7 +107,15 @@ make fe
 #   npm-run-% - run any npm script
 #   npm-% - run any npm command
 
+make website-infra
+# Available targets:
+#   test - test infrastructure
+#   deploy - deploy infrastructure
+
 make api
+# Available targets:
+
+make apitest
 # Available targets:
 
 make e2etest
