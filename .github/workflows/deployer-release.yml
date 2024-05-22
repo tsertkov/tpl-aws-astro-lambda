@@ -39,7 +39,7 @@ jobs:
       - name: Publish image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_NAME: lbl-app-${{ matrix.environment }}-deployer
+          IMAGE_NAME: tpl-aws-astro-lambda-${{ matrix.environment }}-deployer
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker tag deployer ${ECR_REGISTRY}/${IMAGE_NAME}:latest
