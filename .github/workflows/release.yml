@@ -20,3 +20,11 @@ jobs:
     with:
       env: prd
       version: ${{ needs.gitversion.outputs.version }}
+  deploy-prd:
+    name: Deploy ${{ needs.gitversion.outputs.version }}
+    uses: ./.github/workflows/package-deploy.yml
+    needs:
+      - release
+      - gitversion
+    with:
+      env: prd

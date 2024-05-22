@@ -1,0 +1,91 @@
+name: 'package : deploy'
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        type: string
+        required: true
+
+env:
+  PRJ_NAME: lbl-app
+
+jobs:
+  deploy:
+    name: deploy-${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Download deployment package
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-session-name: package-deploy-${{ inputs.env }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_ROLE }}
+      - name: Upload deployment package to S3
+        id: source
+        run: |
+          versionId=$(aws s3api put-object \
+            --bucket ${{ vars.SOURCE_BUCKET }} \
+            --key package.zip \
+            --body package.zip \
+            --query VersionId \
+            --output text
+          )
+          test $? -eq 0
+          echo "versionId=${versionId}" >> $GITHUB_OUTPUT
+      - name: Wait for deployment pipeline to start
+        id: pipeline
+        run: |
+          while true; do
+            echo -n "looking for pipeline execution: "
+            executionArn=$(
+              aws codepipeline list-pipeline-executions \
+                --pipeline-name ${{ env.PRJ_NAME }}-${{ inputs.environment }} \
+                --query "pipelineExecutionSummaries[?sourceRevisions[?revisionId=='${{ steps.source.outputs.versionId }}'] && trigger.triggerType=='CloudWatchEvent'].pipelineExecutionId" \
+                --output text
+            )
+
+            if [ -z "$executionArn" ]; then
+              echo "not found"
+              sleep 5
+              continue
+            fi
+
+            echo $executionArn
+            echo "executionArn=${executionArn}" >> $GITHUB_OUTPUT
+            break
+          done
+      - name: Monitor deployment pipeline
+        run: |
+          while true; do
+            echo -n "pipeline execution status: "
+            status=$(
+              aws codepipeline get-pipeline-execution \
+                --pipeline-name ${{ env.PRJ_NAME }}-${{ inputs.environment }} \
+                --pipeline-execution-id ${{ steps.pipeline.outputs.executionArn }} \
+                --query pipelineExecution.status \
+                --output text
+            )
+            echo $status
+
+            if [ "$status" == "InProgress" -o "$status" == "Stopping" ]; then
+              sleep 5
+              continue
+            fi
+
+            if [ "$status" == "Succeeded" ]; then
+              echo "Deployment succeeded"
+              break
+            fi
+
+            exit 1
+          done
