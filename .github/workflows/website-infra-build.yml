@@ -1,0 +1,35 @@
+name: 'website-infra : build'
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'website/infra/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'website/infra/**'
+
+jobs:
+  build-website-infra:
+    name: website-infra-${{ inputs.env || 'stg' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            config.json
+            Makefile
+            website/infra
+            website/Makefile
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-infra
+          path: website/infra
