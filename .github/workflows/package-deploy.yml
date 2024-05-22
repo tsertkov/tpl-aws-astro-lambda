@@ -12,13 +12,13 @@ on:
         required: true
 
 env:
-  PRJ_NAME: lbl-app
+  PRJ_NAME: tpl-aws-astro-lambda
 
 jobs:
   deploy:
-    name: deploy-${{ inputs.environment }}
+    name: deploy-${{ inputs.env }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: ${{ inputs.env }}
     steps:
       - name: Download deployment package
         uses: actions/download-artifact@v4
@@ -70,7 +70,7 @@ jobs:
             echo -n "pipeline execution status: "
             status=$(
               aws codepipeline get-pipeline-execution \
-                --pipeline-name ${{ env.PRJ_NAME }}-${{ inputs.environment }} \
+                --pipeline-name ${{ env.PRJ_NAME }}-${{ inputs.env }} \
                 --pipeline-execution-id ${{ steps.pipeline.outputs.executionArn }} \
                 --query pipelineExecution.status \
                 --output text
