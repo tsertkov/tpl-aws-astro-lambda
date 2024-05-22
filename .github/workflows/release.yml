@@ -28,3 +28,12 @@ jobs:
       - gitversion
     with:
       env: prd
+  deployment-test:
+    name: Test ${{ needs.gitversion.outputs.version }}
+    uses: ./.github/workflows/deployment-test.yml
+    needs:
+      - deploy-prd
+      - gitversion
+    with:
+      env: prd
+      version: ${{ needs.gitversion.outputs.version }}

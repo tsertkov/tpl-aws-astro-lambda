@@ -8,6 +8,8 @@ on:
         required: true
         default: stg
         type: string
+      version:
+        type: string
   workflow_dispatch:
     inputs:
       env:
@@ -17,6 +19,8 @@ on:
         options:
           - stg
           - prd
+      version:
+        type: string
   pull_request:
     branches: ['main']
     paths:
@@ -46,4 +50,4 @@ jobs:
       - name: 'Run e2etest'
         run: |
           make e2etest-init
-          make e2etest-run ENV=${{ inputs.env || 'stg' }}
+          make e2etest-run ENV=${{ inputs.env || 'stg' }} VERSION=${{ inputs.version || 'dev' }}
