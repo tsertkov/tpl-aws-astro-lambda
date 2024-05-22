@@ -42,6 +42,7 @@ jobs:
     uses: ./.github/workflows/package-deploy.yml
     needs:
       - package-build
+      - gitversion
     with:
       env: ${{ inputs.env || 'stg' }}
   e2e-test:
