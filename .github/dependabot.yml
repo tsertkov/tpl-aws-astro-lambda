@@ -31,7 +31,7 @@ updates:
       development-dependencies:
         dependency-type: "development"
   - package-ecosystem: "npm"
-    directory: "/api"
+    directory: "/api/src"
     schedule:
       interval: "weekly"
     groups:
