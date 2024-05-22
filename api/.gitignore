@@ -1,0 +1,4 @@
+.aws-sam/
+infra/*-packaged.yaml
+src/coverage/
+src/node_modules/

@@ -1,1 +1,0 @@
-var t=class{constructor(r){this.registry=r}report(){return JSON.stringify({...this.registry,status:"ok"})}};var{REG_NAME:s}=process.env,o=new t({region:s});async function c(){return{statusCode:200,headers:{"content-type":"application/json"},body:o.report()}}export{c as handler};
