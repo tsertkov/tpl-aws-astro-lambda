@@ -1,0 +1,23 @@
+mode: Mainline
+branches:
+  main:
+    increment: Patch
+  develop:
+    tag: dev
+    increment: Patch
+    source-branches:
+      - main
+  feature:
+    tag: useBranchName
+    increment: Minor
+    source-branches:
+      - main
+  release:
+    tag: ''
+    source-branches:
+      - main
+      - hotfix
+  hotfix:
+    tag: fix
+    source-branches:
+      - release
