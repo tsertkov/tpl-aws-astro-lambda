@@ -272,7 +272,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref DeploymentBuild
-                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-infra-deploy
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "website-infra-deploy
                   REGION=eu-central-1 ENV=${Environment}", "type": "PLAINTEXT" }
                   ]'
               InputArtifacts:
@@ -286,7 +286,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref DeploymentBuild
-                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-fe-deploy
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "website-fe-deploy
                   ENV=${Environment}", "type": "PLAINTEXT" } ]'
               InputArtifacts:
                 - Name: SourceOutput
