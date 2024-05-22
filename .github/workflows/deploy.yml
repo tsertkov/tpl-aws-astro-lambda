@@ -47,6 +47,6 @@ jobs:
   e2e-test:
     name: Test
     uses: ./.github/workflows/e2etest-run.yml
-    needs: fe-deploy
+    needs: package-deploy
     with:
       env: ${{ inputs.env || 'stg' }}
