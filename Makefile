@@ -4,29 +4,38 @@ include .makefiles/Makefile.base.mk
 ENV ?= stg
 
 define HELP_SCREEN
-  deploy - build & deploy all
-  fe-% - fe targets
-  infra-% - infra targets
-  e2etest-% - e2etest targets
+  api-% - API targets
+  infra-% - Infra targets
+  website-% - Website targets
+  e2etest-% - E2Etest targets
+  apitest-% - APItest targets
+  deployer-% - Deployer targets
 endef
 
 define run_target
 	@$(MAKE) -C $(1) $(2) ENV=$(ENV)
 endef
 
-fe: fe-list
-fe-%:
-	$(call run_target,fe,$*)
+api: api-list
+api-%:
+	$(call run_target,api,$*)
 
 infra: infra-list
 infra-%:
 	$(call run_target,infra,$*)
 
+website: website-list
+website-%:
+	$(call run_target,website,$*)
+
 e2etest: e2etest-list
 e2etest-%:
 	$(call run_target,e2etest,$*)
 
-deploy: \
-	infra-deploy \
-	fe-build \
-	fe-deploy
+apitest: apitest-list
+apitest-%:
+	$(call run_target,apitest,$*)
+
+deployer: deployer-list
+deployer-%:
+	$(call run_target,deployer,$*)

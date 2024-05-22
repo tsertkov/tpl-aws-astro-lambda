@@ -1,0 +1,337 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  ProjectName:
+    Type: String
+    MinLength: 2
+  GitHubOrg:
+    Type: String
+    MinLength: 2
+  RepositoryName:
+    Type: String
+    MinLength: 2
+  SamSourceBucketEuc1:
+    Type: String
+    MinLength: 2
+  Environment:
+    Type: String
+    MinLength: 2
+  WithConfirm:
+    Type: String
+    AllowedValues:
+      - 'true'
+      - 'false'
+
+Conditions:
+  WithConfirm: !Not [!Equals [!Ref WithConfirm, 'false']]
+  NoConfirm: !Equals [!Ref WithConfirm, 'false']
+
+Resources:
+  DeployerRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub ${ProjectName}-deployer
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+  ArtifactsBucket:
+    Type: AWS::S3::Bucket
+  CICDRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !ImportValue GitHubOidcArn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${RepositoryName}:*
+      Policies:
+        - PolicyName: CIPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                  - ecr:InitiateLayerUpload
+                  - ecr:CompleteLayerUpload
+                  - ecr:BatchCheckLayerAvailability
+                Resource: !GetAtt DeployerRepository.Arn
+              - Effect: Allow
+                Action:
+                  - codepipeline:GetPipelineExecution
+                  - codepipeline:ListPipelineExecutions
+                Resource: !Sub arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${ProjectName}
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                Resource:
+                  - !Sub arn:aws:s3:::${SamSourceBucketEuc1}/*
+                  - !Sub arn:aws:s3:::${SourceBucket}/*
+  DeploymentPipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: CodePipelinePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !Sub arn:aws:s3:::${ArtifactsBucket}/*
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource: !Sub arn:aws:s3:::${SourceBucket}/*
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketVersioning
+                Resource: !GetAtt SourceBucket.Arn
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                Resource: !GetAtt DeploymentBuild.Arn
+  DeploymentBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  DeploymentBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${ProjectName}-deploy
+      ServiceRole: !GetAtt DeploymentBuildRole.Arn
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_LAMBDA_CONTAINER
+        ComputeType: BUILD_LAMBDA_2GB
+        Image: !Sub ${DeployerRepository.RepositoryUri}:latest
+        ImagePullCredentialsType: SERVICE_ROLE
+        EnvironmentVariables:
+          - Name: SAM_CLI_TELEMETRY
+            Value: 0
+            Type: PLAINTEXT
+          - Name: __SAM_CLI_APP_DIR
+            Value: /tmp/.aws-sam
+            Type: PLAINTEXT
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            build:
+              commands:
+                - make $MAKE_ARGS
+  DeploymentPipelineWithConfirm:
+    Type: AWS::CodePipeline::Pipeline
+    Condition: WithConfirm
+    Properties:
+      Name: !Ref ProjectName
+      RoleArn: !GetAtt DeploymentPipelineRole.Arn
+      PipelineType: V2
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactsBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: S3
+              Configuration:
+                S3Bucket: !Ref SourceBucket
+                S3ObjectKey: lbl-app.zip
+                PollForSourceChanges: false
+              OutputArtifacts:
+                - Name: SourceOutput
+        - Name: Confirm
+          Actions:
+            - Name: Confirm
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Version: 1
+                Provider: Manual
+              Configuration:
+                CustomData: Approve the deployment
+        - Name: Deploy
+          Actions:
+            - Name: webapp-euc1
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-infra-deploy
+                  REGION=eu-central-1 ENV=${Environment}", "type": "PLAINTEXT" }
+                  ]'
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: webapp-fe
+              RunOrder: 2
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-fe-deploy
+                  ENV=${Environment}", "type": "PLAINTEXT" } ]'
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: api-use1
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "api-deploy
+                  REGION=us-east-1 ENV=${Environment}", "type": "PLAINTEXT" } ]'
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: api-euc1
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "api-deploy
+                  REGION=eu-central-1 ENV=${Environment}", "type": "PLAINTEXT" }
+                  ]'
+              InputArtifacts:
+                - Name: SourceOutput
+  DeploymentPipelineNoConfirm:
+    Type: AWS::CodePipeline::Pipeline
+    Condition: NoConfirm
+    Properties:
+      Name: !Ref ProjectName
+      RoleArn: !GetAtt DeploymentPipelineRole.Arn
+      PipelineType: V2
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactsBucket
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: S3
+              Configuration:
+                S3Bucket: !Ref SourceBucket
+                S3ObjectKey: lbl-app.zip
+                PollForSourceChanges: false
+              OutputArtifacts:
+                - Name: SourceOutput
+        - Name: Deploy
+          Actions:
+            - Name: webapp-euc1
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-infra-deploy
+                  REGION=eu-central-1 ENV=${Environment}", "type": "PLAINTEXT" }
+                  ]'
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: webapp-fe
+              RunOrder: 2
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-fe-deploy
+                  ENV=${Environment}", "type": "PLAINTEXT" } ]'
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: api-use1
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "api-deploy
+                  REGION=us-east-1 ENV=${Environment}", "type": "PLAINTEXT" } ]'
+              InputArtifacts:
+                - Name: SourceOutput
+            - Name: api-euc1
+              RunOrder: 1
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref DeploymentBuild
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "api-deploy
+                  REGION=eu-central-1 ENV=${Environment}", "type": "PLAINTEXT" }
+                  ]'
+              InputArtifacts:
+                - Name: SourceOutput
+Outputs:
+  CICDRoleArn:
+    Value: !GetAtt CICDRole.Arn
+  SourceBucket:
+    Value: !Ref SourceBucket

@@ -2,7 +2,7 @@
 
 # tpl-aws-astro-lambda
 
-A monorepo template for an AWS-hosted, Astro-generated static website, complete with infrastructure code, CI/CD automations, multiple environments, and optional basic auth protection.
+A monorepo template for an AWS-hosted, Astro-generated static website with an API in AWS Lambda, complete with infrastructure code, CI/CD automations, multiple environments, and optional basic auth protection.
 
 💲 **$0.50** 🌟 Monthly AWS cost (**🌐 DNS Zone** + 🔧 *usage*)
 
@@ -23,11 +23,14 @@ Learn more infrastructure details from [the documentation](docs/infrastructure.m
 
 ## Monorepo Layout
 
-- [`fe/`](/fe) - Frontend project
-- [`infra/`](/infra) - Infrastructure project
-- [`e2etest/`](/e2etest) - End to end test project
-- [`config.json`](/config.json) - config file
-- [`Makefile`](/Makefile) - task automations
+- [`website/`](/fe) - Frontend project
+- [`api/`](/be) - Backend API project
+- [`infra/`](/infra) - Common Infrastructure project
+- [`deployer/`](/deployer) - Cloud deployer project
+- [`e2etest/`](/e2etest) - End2end test project
+- [`apitest/`](/apitest) - API test project
+- [`config.json`](/config.json) - Config file
+- [`Makefile`](/Makefile) - Task automations
 
 Learn more about monorepo architecture from [the documentation](docs/monorepo.md).
 
@@ -90,12 +93,8 @@ make fe
 #   npm-run-% - run any npm script
 #   npm-% - run any npm command
 
-make infra
+make api
 # Available targets:
-#  deploy - deploy infrastructure
-#  deploy-certificate - deploy ACM certificate
-#  deploy-github-oidc - deploy GitHub OIDC
-#  test - test infrastructure
 
 make e2etest
 # Available targets:

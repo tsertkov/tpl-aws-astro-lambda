@@ -1,4 +1,4 @@
-name: 'fe : deploy'
+name: 'website-fe : deploy'
 
 permissions:
   id-token: write
@@ -23,12 +23,13 @@ jobs:
             .makefiles
             config.json
             Makefile
-            fe
+            website/fe
+            website/Makefile
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: fe
-          path: fe/dist
+          name: website-fe
+          path: website/fe/dist
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -36,4 +37,4 @@ jobs:
           role-session-name: deploy-fe
           role-to-assume: ${{ vars.AWS_ROLE }}
       - name: Deploy frontend
-        run: make fe-deploy ENV=${{ inputs.env }}
+        run: make website-fe-deploy ENV=${{ inputs.env }}

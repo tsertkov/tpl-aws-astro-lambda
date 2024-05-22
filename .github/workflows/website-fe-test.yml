@@ -1,15 +1,15 @@
-name: 'fe : test'
+name: 'website-fe : test'
 
 on:
   workflow_dispatch:
   pull_request:
     branches: ['main']
     paths:
-      - 'fe/**'
+      - 'website/fe/**'
   push:
     branches: ['main']
     paths:
-      - 'fe/**'
+      - 'website/fe/**'
 
 jobs:
   test-fe:
@@ -21,15 +21,16 @@ jobs:
             .makefiles
             config.json
             Makefile
-            fe
+            website/fe
+            website/Makefile
       - uses: actions/setup-node@v4
         with:
           cache: npm
-          cache-dependency-path: fe/package-lock.json
-          node-version-file: fe/package.json
+          cache-dependency-path: website/fe/package-lock.json
+          node-version-file: website/fe/package.json
       - name: Init dependencies
-        run: make fe-init-test
+        run: make website-fe-init-test
       - name: Run tests
-        run: make fe-test
+        run: make website-fe-test
       - name: Test build run
-        run: make fe-build
+        run: make website-fe-build

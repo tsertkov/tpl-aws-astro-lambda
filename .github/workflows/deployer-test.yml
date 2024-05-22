@@ -1,0 +1,43 @@
+name: 'deployer : test'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'deployer/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'deployer/**'
+
+env:
+  SAM_CLI_TELEMETRY: 0
+  AWS_REGION: eu-central-1
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            deployer
+            Makefile
+            config.json
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        run: make deployer-image
+  test-infra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            deployer
+            Makefile
+            config.json
+      - name: 'Test deployer'
+        run: make deployer-infra-lint

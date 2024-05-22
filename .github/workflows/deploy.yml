@@ -28,12 +28,12 @@ concurrency:
 jobs:
   fe-build:
     name: Build
-    uses: ./.github/workflows/fe-build.yml
+    uses: ./.github/workflows/website-fe-build.yml
     with:
       env: ${{ inputs.env || 'stg' }}
   fe-deploy:
     name: Deploy
-    uses: ./.github/workflows/fe-deploy.yml
+    uses: ./.github/workflows/website-fe-deploy.yml
     needs: fe-build
     with:
       env: ${{ inputs.env || 'stg' }}

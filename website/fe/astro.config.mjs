@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config'
 import robotsTxt from 'astro-robots-txt'
 import compress from 'astro-compress'
-import config from '../config.json'
+import config from '../../config.json'
 
 // environment aware configuration
 const ENV = process.env.ENV || 'dev'

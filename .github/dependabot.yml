@@ -22,7 +22,16 @@ updates:
       development-dependencies:
         dependency-type: "development"
   - package-ecosystem: "npm"
-    directory: "/fe"
+    directory: "/website/fe"
+    schedule:
+      interval: "weekly"
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+  - package-ecosystem: "npm"
+    directory: "/api"
     schedule:
       interval: "weekly"
     groups:

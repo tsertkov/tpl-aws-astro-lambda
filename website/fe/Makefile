@@ -1,12 +1,14 @@
 .PHONY: *
 
-include ../.makefiles/Makefile.base.mk
-include ../.makefiles/Makefile.aws.mk
-include ../.makefiles/Makefile.npm.mk
+ROOT_DIR = ../..
+
+include $(ROOT_DIR)/.makefiles/Makefile.base.mk
+include $(ROOT_DIR)/.makefiles/Makefile.aws.mk
+include $(ROOT_DIR)/.makefiles/Makefile.npm.mk
 
 # config vars
 ENV ?= stg
-CONFIG_FILE = ../config.json
+CONFIG_FILE = $(ROOT_DIR)/config.json
 
 define HELP_SCREEN
   build - build frontend

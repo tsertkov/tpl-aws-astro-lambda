@@ -2,6 +2,11 @@
   "projectName": "tpl-aws-astro-lambda",
   "certificateDomain": "alekswrite.com",
   "default": {
+    "deployer": {
+      "githubOrg":  "tsertkov",
+      "githubRepo": "tpl-aws-astro-lambda",
+      "region": "eu-central-1"
+    },
     "region": "eu-central-1",
     "githubRepo": "tsertkov/tpl-aws-astro-lambda",
     "logsRetentionInDays": 731,
@@ -29,7 +34,7 @@
     "basicAuthUsername": "staging",
     "basicAuthPassword": "letmein",
     "debug": "true",
-    "s3bucket": "",
-    "cloudfrontId": ""
+    "s3bucket": "tpl-aws-astro-lambda-stg-euc1-webbucket-mdrzflaxpz1e",
+    "cloudfrontId": "E293B0XJFNUJ6B"
   }
 }
