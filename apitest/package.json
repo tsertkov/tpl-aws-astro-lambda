@@ -1,0 +1,21 @@
+{
+    "name": "@tpl-aws-astro-lambda/apitest",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "start": "node --test --test-reporter spec test/*",
+        "test": "npm run prettier:check && npm run eslint:check",
+        "format": "npm run prettier:fix && npm run eslint:fix",
+        "prettier:fix": "prettier --write .",
+        "eslint:fix": "eslint --fix .",
+        "prettier:check": "prettier --check .",
+        "eslint:check": "eslint ."
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "devDependencies": {
+        "eslint": "^9.3.0",
+        "prettier": "^3.2.5"
+    }
+}

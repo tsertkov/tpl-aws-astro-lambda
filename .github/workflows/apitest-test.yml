@@ -1,0 +1,38 @@
+name: 'apitest : test'
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "apitest/**"
+
+  push:
+    branches: ["main"]
+    paths:
+      - "apitest/**"
+
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: ./apitest
+
+jobs:
+  test-apitest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            apitest
+            Makefile
+            config.json
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: apitest/package-lock.json
+          node-version-file: apitest/package.json
+      - run: make apitest-init-test
+      - run: make apitest-test
