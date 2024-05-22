@@ -83,7 +83,7 @@ deploy: \
 	@sam deploy \
 		--resolve-s3 \
 		--template-file infra.yaml \
-		--confirm-changeset \
+		--no-confirm-changeset \
 		--no-fail-on-empty-changeset \
 		--region $(REGION) \
 		--stack-name $(STACK_NAME) \
