@@ -49,8 +49,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           cache: npm
-          cache-dependency-path: api/package-lock.json
-          node-version-file: api/package.json
+          cache-dependency-path: api/src/package-lock.json
+          node-version-file: api/src/package.json
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
