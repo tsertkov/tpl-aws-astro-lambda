@@ -13,11 +13,6 @@ on:
 
   workflow_dispatch:
 
-defaults:
-  run:
-    shell: bash
-    working-directory: ./apitest
-
 jobs:
   test-apitest:
     runs-on: ubuntu-latest
