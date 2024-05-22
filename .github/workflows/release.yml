@@ -24,7 +24,7 @@ jobs:
     name: Deploy ${{ needs.gitversion.outputs.version }}
     uses: ./.github/workflows/package-deploy.yml
     needs:
-      - release
+      - package-build
       - gitversion
     with:
       env: prd
