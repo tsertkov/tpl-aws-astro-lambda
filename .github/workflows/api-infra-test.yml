@@ -1,0 +1,31 @@
+name: 'api-infra : test'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'api/infra/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'api/infra/**'
+
+env:
+  SAM_CLI_TELEMETRY: 0
+  AWS_REGION: eu-central-1
+
+jobs:
+  test-api-infra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            Makefile
+            config.json
+            api/Makefile
+            api/infra/
+      - name: Run tests
+        run: make infra-test
