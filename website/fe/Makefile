@@ -18,15 +18,21 @@ endef
 
 # extract config vars from config file
 CONFIG_VALUES := $(shell jq -rc '[\
-	.$(ENV).s3bucket // false \
-	, .$(ENV).cloudfrontId // false \
+	.projectName // false \
+	, .$(ENV).region // .default.region // false \
 ] | @tsv' $(CONFIG_FILE))
 
 # extract vars from config file
 read_config_var = $(word $(1), $(CONFIG_VALUES))
-S3_BUCKET := $(call read_config_var,1)
-CLOUDFRONT_ID := $(call read_config_var,2)
+PROJECT_NAME := $(call read_config_var,1)
+REGION := $(call read_config_var,2)
 
+# convert aws region to short version
+REG_NAME = $(call aws_region_to_short_name,$(REGION))
+WEBSITE_STACK = $(PROJECT_NAME)-$(ENV)-$(REG_NAME)
+
+deploy: S3_BUCKET := $(call aws_cf_output,$(WEBSITE_STACK),$(REGION),WebBucket)
+deploy: CLOUDFRONT_ID := $(call aws_cf_output,$(WEBSITE_STACK),$(REGION),Distribution)
 deploy: \
 	assert-ENV \
 	assert-S3_BUCKET \
