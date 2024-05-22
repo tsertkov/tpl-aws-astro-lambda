@@ -1,0 +1,22 @@
+name: ': release'
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['release']
+
+jobs:
+  gitversion:
+    name: Init release
+    uses: ./.github/workflows/gitversion.yml
+  package-build:
+    name: Build ${{ needs.gitversion.outputs.version }}
+    uses: ./.github/workflows/package-build.yml
+    needs: gitversion
+    with:
+      environment: prd
+      version: ${{ needs.gitversion.outputs.version }}
