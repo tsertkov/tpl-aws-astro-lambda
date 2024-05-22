@@ -47,7 +47,6 @@ DELETION_PROTECTION := $(call read_config_var,8)
 # validate that required config vars are set
 assert_set = $(if $(filter $(1),false),$(error $(1) is not set),)
 $(call assert_set,$(PROJECT_NAME))
-$(call assert_set,$(GLB_PROJECT_NAME))
 $(call assert_set,$(DEFAULT_REGION))
 $(call assert_set,$(DOMAIN))
 $(call assert_set,$(HOSTED_ZONE_ID))
