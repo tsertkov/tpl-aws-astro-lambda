@@ -49,7 +49,7 @@ jobs:
             echo -n "looking for pipeline execution: "
             executionArn=$(
               aws codepipeline list-pipeline-executions \
-                --pipeline-name ${{ env.PRJ_NAME }}-${{ inputs.environment }} \
+                --pipeline-name ${{ env.PRJ_NAME }}-${{ inputs.env }} \
                 --query "pipelineExecutionSummaries[?sourceRevisions[?revisionId=='${{ steps.source.outputs.versionId }}'] && trigger.triggerType=='CloudWatchEvent'].pipelineExecutionId" \
                 --output text
             )
