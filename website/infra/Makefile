@@ -27,7 +27,6 @@ CONFIG_VALUES := $(shell jq -rc '[\
 	, .$(ENV).basicAuth // .default.basicAuth // false \
 	, .$(ENV).basicAuthUsername // .default.basicAuthUsername // false \
 	, .$(ENV).basicAuthPassword // .default.basicAuthPassword // false \
-	, .$(ENV).githubRepo // .default.githubRepo // false \
 	, .$(ENV).acmCertificateId // .default.acmCertificateId // false \
 ] | @tsv' $(CONFIG_FILE))
 
@@ -44,8 +43,7 @@ LOGS_RETENTION_IN_DAYS := $(call read_config_var,8)
 WITH_BASIC_AUTH := $(call read_config_var,9)
 BASIC_AUTH_USERNAME := $(call read_config_var,10)
 BASIC_AUTH_PASSWORD := $(call read_config_var,11)
-GITHUB_REPO := $(call read_config_var,12)
-ACM_CERTIFICATE := $(call read_config_var,13)
+ACM_CERTIFICATE := $(call read_config_var,12)
 
 # validate that required config vars are set
 assert_set = $(if $(filter $(1),false),$(error $(1) is not set),)
@@ -56,7 +54,6 @@ $(call assert_set,$(DOMAIN))
 $(call assert_set,$(HOSTED_ZONE_ID))
 $(call assert_set,$(ERROR_RESPONSE_FILE))
 $(call assert_set,$(LOGS_RETENTION_IN_DAYS))
-$(call assert_set,$(GITHUB_REPO))
 
 # convert false to empty string for optional parameters
 false_to_empty_string = $(if $(filter $(1),false),,$(1))
@@ -80,7 +77,6 @@ deploy: \
 	assert-LOGS_RETENTION_IN_DAYS \
 	assert-WITH_BASIC_AUTH \
 	assert-ERROR_RESPONSE_FILE \
-	assert-GITHUB_REPO \
 	assert-ACM_CERTIFICATE \
 	require-sam
 	$(call _announce_target, $@)
@@ -103,7 +99,6 @@ deploy: \
 			"ParameterKey=BasicAuthUsername,ParameterValue='$(BASIC_AUTH_USERNAME)'" \
 			"ParameterKey=BasicAuthPassword,ParameterValue='$(BASIC_AUTH_PASSWORD)'" \
 			"ParameterKey=ErrorResponseFileKey,ParameterValue='$(ERROR_RESPONSE_FILE)'" \
-			"ParameterKey=GithubTokenSub,ParameterValue='repo:$(GITHUB_REPO):environment:$(ENV)'" \
 			"ParameterKey=AcmCertificate,ParameterValue='$(ACM_CERTIFICATE)'"
 
 test: \
