@@ -50,6 +50,7 @@ jobs:
             .makefiles
             Makefile
             config.json
+            website/Makefile
       - name: Download website-fe deployment artifact
         uses: actions/download-artifact@v4
         with:
@@ -67,7 +68,13 @@ jobs:
           path: api
       - name: Create deployment package
         id: source
-        run: zip -r package.zip .makefiles Makefile config.json api website
+        run: zip -r package.zip \
+          .makefiles \
+          api \
+          website \
+          website/Makefile \
+          Makefile \
+          config.json
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
