@@ -15,7 +15,7 @@ env:
   SAM_CLI_TELEMETRY: 0
 
 jobs:
-  test-infra:
+  test-website-infra:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
