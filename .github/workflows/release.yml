@@ -20,11 +20,33 @@ jobs:
     with:
       env: prd
       version: ${{ needs.gitversion.outputs.version }}
+  release:
+    name: Release ${{ needs.gitversion.outputs.version }}
+    runs-on: ubuntu-latest
+    needs:
+      - gitversion
+      - package-build
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ needs.gitversion.outputs.version }}
+    steps:
+      - name: Download deployment package
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ needs.gitversion.outputs.version }}
+          artifacts: package.zip
+          makeLatest: true
   deploy-prd:
     name: Deploy ${{ needs.gitversion.outputs.version }}
     uses: ./.github/workflows/package-deploy.yml
     needs:
-      - package-build
+      - release
       - gitversion
     with:
       env: prd
