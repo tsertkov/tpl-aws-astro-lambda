@@ -195,7 +195,7 @@ Resources:
                 CustomData: Approve the deployment
         - Name: Deploy
           Actions:
-            - Name: webapp-euc1
+            - Name: website-euc1
               RunOrder: 1
               ActionTypeId:
                 Category: Build
@@ -204,12 +204,12 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref DeploymentBuild
-                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-infra-deploy
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "website-infra-deploy
                   REGION=eu-central-1 ENV=${Environment}", "type": "PLAINTEXT" }
                   ]'
               InputArtifacts:
                 - Name: SourceOutput
-            - Name: webapp-fe
+            - Name: website-fe
               RunOrder: 2
               ActionTypeId:
                 Category: Build
@@ -218,7 +218,7 @@ Resources:
                 Provider: CodeBuild
               Configuration:
                 ProjectName: !Ref DeploymentBuild
-                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-fe-deploy
+                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "website-fe-deploy
                   ENV=${Environment}", "type": "PLAINTEXT" } ]'
               InputArtifacts:
                 - Name: SourceOutput
@@ -263,7 +263,7 @@ Resources:
                 - Name: SourceOutput
         - Name: Deploy
           Actions:
-            - Name: webapp-euc1
+            - Name: website-euc1
               RunOrder: 1
               ActionTypeId:
                 Category: Build
@@ -277,7 +277,7 @@ Resources:
                   ]'
               InputArtifacts:
                 - Name: SourceOutput
-            - Name: webapp-fe
+            - Name: website-fe
               RunOrder: 2
               ActionTypeId:
                 Category: Build
