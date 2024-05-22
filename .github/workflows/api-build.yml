@@ -1,0 +1,73 @@
+name: 'api : build'
+run-name: Build api for ${{ inputs.env }}
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        description: 'Environment to deploy to'
+        type: string
+        required: true
+      version:
+        description: 'Version to build'
+        type: string
+        required: true
+        default: dev
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Environment
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - stg
+          - prd
+      version:
+        description: 'Version to build'
+        type: string
+        required: true
+        default: dev
+
+jobs:
+  build-api:
+    name: api-${{ inputs.env }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            api
+            Makefile
+            config.json
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+          node-version-file: api/package.json
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-session-name: api-build-${{ inputs.env }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_ROLE }}
+      - name: Install dependencies
+        run: make api-init
+      - name: Build and package api
+        run: |
+          make api-package VERSION=${{ inputs.version }} ENV=${{ inputs.env }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: api
+          if-no-files-found: error
+          path: |
+            api/infra/*-packaged.yaml
+            api/Makefile
