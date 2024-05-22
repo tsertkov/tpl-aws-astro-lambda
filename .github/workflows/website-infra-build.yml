@@ -1,6 +1,15 @@
 name: 'website-infra : build'
 
 on:
+  workflow_dispatch:
+    inputs:
+      env:
+        required: true
+        default: stg
+        type: choice
+        options:
+          - stg
+          - prd
   workflow_call:
     inputs:
       env:
