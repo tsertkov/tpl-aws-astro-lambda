@@ -19,22 +19,29 @@ on:
     branches:
       - main
     paths:
-      - 'fe/**'
+      - 'api/**'
+      - 'website/**'
 
 concurrency:
   group: ${{ inputs.env || 'stg' }}
   cancel-in-progress: true
 
 jobs:
-  fe-build:
-    name: Build
-    uses: ./.github/workflows/website-fe-build.yml
+  gitversion:
+    name: Init deploy-${{ inputs.env || 'stg' }}
+    uses: ./.github/workflows/gitversion.yml
+  package-build:
+    name: Build ${{ needs.gitversion.outputs.version }}
+    uses: ./.github/workflows/package-build.yml
+    needs: gitversion
     with:
       env: ${{ inputs.env || 'stg' }}
-  fe-deploy:
-    name: Deploy
-    uses: ./.github/workflows/website-fe-deploy.yml
-    needs: fe-build
+      version: ${{ needs.gitversion.outputs.version }}
+  package-deploy:
+    name: Deploy ${{ needs.gitversion.outputs.version }}
+    uses: ./.github/workflows/package-deploy.yml
+    needs:
+      - package-build
     with:
       env: ${{ inputs.env || 'stg' }}
   e2e-test:
