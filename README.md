@@ -4,7 +4,7 @@
 
 A monorepo template for an AWS-hosted, Astro-generated static website with an API in AWS Lambda, complete with infrastructure code, CI/CD automations, multiple environments, and optional basic auth protection.
 
-💲 **$0.50** 🌟 Monthly AWS cost (**🌐 DNS Zone** + 🔧 *usage*)
+💲 >= **$0.55** 🌟 Monthly AWS cost (**🌐 DNS Zone** + **ECR** + 🔧 *usage*)
 
 ## Table of Contents
 
