@@ -35,7 +35,6 @@ jobs:
     uses: ./.github/workflows/website-infra-build.yml
     with:
       env: ${{ inputs.env }}
-      version: ${{ inputs.version }}
   package:
     name: package-${{ inputs.env }}
     runs-on: ubuntu-latest
