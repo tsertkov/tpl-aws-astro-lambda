@@ -22,10 +22,9 @@ on:
       env:
         description: Environment
         required: true
-        default: dev
+        default: stg
         type: choice
         options:
-          - dev
           - stg
           - prd
       version:
