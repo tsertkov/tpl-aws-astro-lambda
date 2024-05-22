@@ -47,9 +47,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            ./.makefiles
-            ./Makefile
-            ./config.json
+            .makefiles
+            Makefile
+            config.json
       - name: Download website-fe deployment artifact
         uses: actions/download-artifact@v4
         with:
@@ -67,7 +67,7 @@ jobs:
           path: api
       - name: Create deployment package
         id: source
-        run: zip -r package.zip .makefiles *
+        run: zip -r package.zip .makefiles Makefile config.json api website
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
