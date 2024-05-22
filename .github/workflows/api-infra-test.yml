@@ -28,4 +28,4 @@ jobs:
             api/Makefile
             api/infra/
       - name: Run tests
-        run: make infra-test
+        run: make api-infra-test
