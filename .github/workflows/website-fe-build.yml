@@ -45,4 +45,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: website-fe
-          path: website/fe/dist
+          path: |
+            website/fe/dist
+            website/fe/Makefile
