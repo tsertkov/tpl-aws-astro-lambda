@@ -21,9 +21,7 @@
   "prd": {
     "domain": {
       "name": "tpl-aws-astro-lambda.alekswrite.com"
-    },
-    "s3bucket": "",
-    "cloudfrontId": ""
+    }
   },
   "stg": {
     "domain": {
@@ -36,8 +34,6 @@
     "basicAuth": "true",
     "basicAuthUsername": "staging",
     "basicAuthPassword": "letmein",
-    "debug": "true",
-    "s3bucket": "tpl-aws-astro-lambda-stg-euc1-webbucket-mdrzflaxpz1e",
-    "cloudfrontId": "E293B0XJFNUJ6B"
+    "debug": "true"
   }
 }
