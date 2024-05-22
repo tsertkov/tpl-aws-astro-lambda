@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  ProjectName:
+    Type: String
+    MinLength: 2
+  RegName:
+    Type: String
+    MinLength: 2
+  DomainName:
+    Type: String
+    MinLength: 4
+  ApiSubdomain:
+    Type: String
+    Default: 'api'
+  IsDefaultRegion:
+    Type: Number
+    Default: 1
+    AllowedValues:
+      - 0
+      - 1
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+  LogsRetentionInDays:
+    Type: Number
+    Default: 30
+
+Conditions:
+  IsDefaultRegion: !Equals [!Ref IsDefaultRegion, 1]
+
+Mappings:
+  RegMap:
+    euc1:
+      ContinentCode: EU
+      HostedZoneId: Z1U9ULNL0V5AJ3
+    use1:
+      ContinentCode: NA
+      HostedZoneId: Z1UJRXOUMOOFQ8
+
+Resources:
+  ApiCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Sub '${ApiSubdomain}.${DomainName}'
+      SubjectAlternativeNames:
+        - !Sub '${ApiSubdomain}-${RegName}.${DomainName}'
+      DomainValidationOptions:
+        - DomainName: !Sub '${ApiSubdomain}.${DomainName}'
+          HostedZoneId: !Ref HostedZoneId
+        - DomainName: !Sub '${ApiSubdomain}-${RegName}.${DomainName}'
+          HostedZoneId: !Ref HostedZoneId
+      ValidationMethod: DNS
+  RegionalApiDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub '${ApiSubdomain}-${RegName}.${DomainName}'
+      Type: A
+      AliasTarget:
+        HostedZoneId: !FindInMap [RegMap, !Ref RegName, HostedZoneId]
+        DNSName: !GetAtt HttpApiDomainName.RegionalDomainName
+  ApiDnsRecordForRegion:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub '${ApiSubdomain}.${DomainName}'
+      SetIdentifier: !Ref RegName
+      GeoLocation:
+        ContinentCode: !FindInMap [RegMap, !Ref RegName, ContinentCode]
+      Type: A
+      AliasTarget:
+        HostedZoneId: !FindInMap [RegMap, !Ref RegName, HostedZoneId]
+        DNSName: !GetAtt HttpApiDomainName.RegionalDomainName
+  ApiDnsRecordForRest:
+    Condition: IsDefaultRegion
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub '${ApiSubdomain}.${DomainName}'
+      SetIdentifier: default
+      GeoLocation:
+        CountryCode: '*'
+      Type: A
+      AliasTarget:
+        HostedZoneId: !FindInMap [RegMap, !Ref RegName, HostedZoneId]
+        DNSName: !GetAtt HttpApiDomainName.RegionalDomainName
+  HttpApiDomainName:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: !Sub '${ApiSubdomain}.${DomainName}'
+      DomainNameConfigurations:
+        - EndpointType: REGIONAL
+          CertificateArn: !Ref ApiCertificate
+  HttpApiDomainNameForRegion:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: !Sub '${ApiSubdomain}-${RegName}.${DomainName}'
+      DomainNameConfigurations:
+        - EndpointType: REGIONAL
+          CertificateArn: !Ref ApiCertificate
+  HttpApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: !Ref LogsRetentionInDays
+      LogGroupName: !Sub '${ProjectName}-${RegName}-api'
+  StatusLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: !Ref LogsRetentionInDays
+      LogGroupName: !Sub '${ProjectName}-${RegName}-lambda-status'
+
+Outputs:
+  ApiLogGroup:
+    Value: !GetAtt HttpApiLogGroup.Arn

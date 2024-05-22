@@ -8,7 +8,7 @@
       "region": "eu-central-1"
     },
     "region": "eu-central-1",
-    "githubRepo": "tsertkov/tpl-aws-astro-lambda",
+    "defaultRegion": "eu-central-1",
     "logsRetentionInDays": 731,
     "errorResponseFileKey": "404.html",
     "acmCertificateId": "a6e79f52-c0b4-4c42-b5b3-5f5ca7913882",
@@ -28,6 +28,9 @@
   "stg": {
     "domain": {
       "name": "tpl-aws-astro-lambda.stg.alekswrite.com"
+    },
+    "deployer": {
+      "confirm": "false"
     },
     "logsRetentionInDays": 14,
     "basicAuth": "true",

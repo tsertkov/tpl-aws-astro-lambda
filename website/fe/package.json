@@ -1,5 +1,5 @@
 {
-    "name": "@tpl-aws-astro-lambda/website/fe",
+    "name": "@tpl-aws-astro-lambda/website",
     "type": "module",
     "version": "0.0.1",
     "engines": {

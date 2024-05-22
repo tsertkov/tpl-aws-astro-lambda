@@ -179,7 +179,7 @@ Resources:
                 Provider: S3
               Configuration:
                 S3Bucket: !Ref SourceBucket
-                S3ObjectKey: lbl-app.zip
+                S3ObjectKey: package.zip
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: SourceOutput
@@ -222,19 +222,6 @@ Resources:
                   ENV=${Environment}", "type": "PLAINTEXT" } ]'
               InputArtifacts:
                 - Name: SourceOutput
-            - Name: api-use1
-              RunOrder: 1
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref DeploymentBuild
-                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "api-deploy
-                  REGION=us-east-1 ENV=${Environment}", "type": "PLAINTEXT" } ]'
-              InputArtifacts:
-                - Name: SourceOutput
             - Name: api-euc1
               RunOrder: 1
               ActionTypeId:
@@ -270,7 +257,7 @@ Resources:
                 Provider: S3
               Configuration:
                 S3Bucket: !Ref SourceBucket
-                S3ObjectKey: lbl-app.zip
+                S3ObjectKey: package.zip
                 PollForSourceChanges: false
               OutputArtifacts:
                 - Name: SourceOutput
@@ -301,19 +288,6 @@ Resources:
                 ProjectName: !Ref DeploymentBuild
                 EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "webapp-fe-deploy
                   ENV=${Environment}", "type": "PLAINTEXT" } ]'
-              InputArtifacts:
-                - Name: SourceOutput
-            - Name: api-use1
-              RunOrder: 1
-              ActionTypeId:
-                Category: Build
-                Owner: AWS
-                Version: 1
-                Provider: CodeBuild
-              Configuration:
-                ProjectName: !Ref DeploymentBuild
-                EnvironmentVariables: !Sub '[ { "name": "MAKE_ARGS", "value": "api-deploy
-                  REGION=us-east-1 ENV=${Environment}", "type": "PLAINTEXT" } ]'
               InputArtifacts:
                 - Name: SourceOutput
             - Name: api-euc1
