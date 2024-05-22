@@ -31,4 +31,4 @@ jobs:
       - name: Init dependencies
         run: make api-init
       - name: Run tests
-        run: make api-test
+        run: make api-api-test
