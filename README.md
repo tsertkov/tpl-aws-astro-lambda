@@ -10,8 +10,9 @@ A monorepo template for an AWS-hosted, Astro-generated static website with an AP
 
 - [Infrastructure and Flow Diagram](#infrastructure-and-flow-diagram)
 - [Monorepo Layout](#monorepo-layout)
+- [Installation](#installation)
 - [Usage](#usage)
-- [Setup](#setup)
+- [License](#license)
 
 ## Infrastructure and Flow Diagram
 
@@ -34,15 +35,14 @@ Learn more infrastructure details from [the documentation](docs/infrastructure.m
 
 Learn more about monorepo architecture from [the documentation](docs/monorepo.md).
 
-## Usage
+## Installation
 
 1. [Start new repository](https://github.com/new?template_name=tpl-aws-website&template_owner=tsertkov) from this template.
 2. Update config.json as necessary.
-3. Go through [Setup](#setup) steps.
+3. [Deploy infrastructure](#deploy-infrastructure).
+4. [Setup CI/CD](#setup-cicd).
 4. Edit `fe/src` files, `git add`, `git commit`, `git push`, etc.
-5. Vaildate `stg` deployment and run `deploy` workflow for `prd` env.
-
-## Setup
+5. Validate `stg` deployment and run `: release` workflow.
 
 ### Deploy infrastructure
 
@@ -57,7 +57,7 @@ make infra-deploy ENV=prd
 
 Update `s3bucket` and `cloudfrontId` in `config.json` with values returned in stack outputs.
 
-### CI/CD
+### Setup CI/CD
 
 To enable the deployment workflow, configure the following Environments and Environment Variables in your GitHub repository settings:
 
@@ -70,11 +70,9 @@ To enable the deployment workflow, configure the following Environments and Envi
 
 Use `CDRoleArn` value from `infra-deploy` outputs to update `AWS_ROLE` environment variable for a corresponding environment in repository settings.
 
-### Makefile
+## Usage
 
-`make` is the default task runner in this project.
-
-Run `make` in your terminal:
+Use `make` to run tasks in this project:
 
 ```sh
 make
@@ -85,6 +83,12 @@ make
 #   e2etest-% - E2Etest targets
 #   apitest-% - APItest targets
 #   deployer-% - Deployer targets
+
+make infra
+# Available targets:
+#  deploy-certificate - deploy ACM certificate
+#  deploy-github-oidc - deploy GitHub OIDC
+#  test - test infrastructure templates
 
 make deployer
 # Available targets:
@@ -109,14 +113,25 @@ make website-fe
 
 make website-infra
 # Available targets:
-#   test - test infrastructure
+#   test - test infrastructure templates
 #   deploy - deploy infrastructure
 
 make api
 # Available targets:
+#   init - init dependencies
+#   test - test api and infrastructure
+#   build - build api lambdas
+#   package - package api and infrastructure
+#   deploy - deploy packaged api and infrastructure
 
 make apitest
 # Available targets:
+#   run - run api tests
+#   init - init dependencies
+#   init-test - init test dependencies
+#   test - run tests
+#   npm-run-% - run any npm script
+#   npm-% - run any npm command
 
 make e2etest
 # Available targets:
@@ -127,3 +142,7 @@ make e2etest
 #   npm-run-% - run any npm script
 #   npm-% - run any npm command
 ```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
