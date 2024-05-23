@@ -1,4 +1,5 @@
-[<img src="docs/assets/use-this-template-btn.png" height="40" /> <img src="docs/assets/055.png" height="40" />](https://github.com/new?template_name=tpl-aws-astro-lambda&template_owner=tsertkov)
+[<img src="docs/assets/use-this-template-btn.png" height="40" />](https://github.com/new?template_name=tpl-aws-astro-lambda&template_owner=tsertkov)
+[<img src="docs/assets/055.png" height="40" />](https://github.com/new?template_name=tpl-aws-astro-lambda&template_owner=tsertkov)
 
 # tpl-aws-astro-lambda
 
