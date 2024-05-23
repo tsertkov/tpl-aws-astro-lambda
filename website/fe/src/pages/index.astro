@@ -31,10 +31,17 @@ const {
       <h1>Dynamic vars (client-side js)</h1>
       <ul id="list-vars"></ul>
     </MsgBox>
-    <MsgBox classNames={['whitebox']}>
-      <h1>Api response</h1>
-      <ul id="list-api"></ul>
-    </MsgBox>
+    <div class="flex flex-center" style="flex: 1 0 100%">
+      <MsgBox classNames={['whitebox']}>
+        <h1>Api response</h1>
+        <ul>
+          <li>Api url: {apiUrl}</li>
+        </ul>
+        <ul id="list-api">
+          <li>GET /statusz: ...</li>
+        </ul>
+      </MsgBox>
+    </div>
   </main>
 </Layout>
 
@@ -48,7 +55,7 @@ const {
     .then(response => response.json())
     .then(data => {
       const listApi = document.getElementById('list-api')
-      listApi.innerHTML += `<li>GET /statusz: ${JSON.stringify(data)}</li>`
+      listApi.innerHTML = `<li>GET /statusz: ${JSON.stringify(data)}</li>`
     })
     .catch(error => console.error('Error:', error))
 </script>
