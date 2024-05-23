@@ -1,7 +1,7 @@
 import { Status } from '../../lib/services/status.mjs'
 
 const status = new Status({
-  region: process.env.REGION,
+  region: process.env.AWS_REGION,
   env: process.env.ENV,
   version: process.env.VERSION,
 })
