@@ -1,11 +1,15 @@
 import { describe, it, before } from 'node:test'
 import assert from 'node:assert/strict'
 
-const apiDomain = process.env.API_DOMAIN
+const {
+  API_URL,
+  ENV,
+  VERSION,
+} = process.env
 
-describe(`Api domain: ${apiDomain}`, () =>
+describe(`Api url: ${API_URL} (env: ${ENV}, version: ${VERSION})`, () =>
   describe('/status', () => {
-    const endpoint = `https://${apiDomain}/statusz`
+    const endpoint = `${API_URL}/statusz`
     let response
 
     describe('with supported request method', () => {

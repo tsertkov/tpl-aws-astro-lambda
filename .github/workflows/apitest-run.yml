@@ -1,0 +1,49 @@
+name: 'apitest : run'
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "apitest/**"
+  push:
+    branches: ["main"]
+    paths:
+      - "apitest/**"
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        default: stg
+        type: string
+      version:
+        type: string
+  workflow_dispatch:
+    inputs:
+      env:
+        required: true
+        default: stg
+        type: choice
+        options:
+          - stg
+          - prd
+      version:
+        type: string
+
+jobs:
+  run-apitest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .makefiles
+            apitest
+            Makefile
+            config.json
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: apitest/package-lock.json
+          node-version-file: apitest/package.json
+      - run: make apitest-init
+      - run: make apitest-run ENV=${{ inputs.env || 'stg' }} VERSION=${{ inputs.version || 'dev' }}

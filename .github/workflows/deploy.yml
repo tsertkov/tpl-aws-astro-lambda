@@ -45,9 +45,12 @@ jobs:
       - gitversion
     with:
       env: ${{ inputs.env || 'stg' }}
-  e2e-test:
-    name: Test
-    uses: ./.github/workflows/e2etest-run.yml
-    needs: package-deploy
+  deployment-test:
+    name: Test ${{ needs.gitversion.outputs.version }}
+    uses: ./.github/workflows/deployment-test.yml
+    needs:
+      - package-deploy
+      - gitversion
     with:
       env: ${{ inputs.env || 'stg' }}
+      version: ${{ needs.gitversion.outputs.version }}
