@@ -10,8 +10,14 @@ on:
         type: string
 
 jobs:
-  e2etest-run:
-    name: webapp
+  run-apitest:
+    name: apitest-${{ inputs.env }}
+    uses: ./.github/workflows/apitest-run.yml
+    with:
+      environment: ${{ inputs.env }}
+      version: ${{ inputs.version }}
+  run-e2etest:
+    name: e2etest-${{ inputs.env }}
     uses: ./.github/workflows/e2etest-run.yml
     with:
       env: ${{ inputs.env }}
