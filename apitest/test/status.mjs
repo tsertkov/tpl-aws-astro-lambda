@@ -1,11 +1,7 @@
 import { describe, it, before } from 'node:test'
 import assert from 'node:assert/strict'
 
-const {
-  API_URL,
-  ENV,
-  VERSION,
-} = process.env
+const { API_URL, ENV, VERSION } = process.env
 
 describe(`Api url: ${API_URL} (env: ${ENV}, version: ${VERSION})`, () =>
   describe('/status', () => {
