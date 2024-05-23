@@ -50,7 +50,12 @@ export default /** @type {import('astro').AstroUserConfig} */ defineConfig({
   integrations: [
     robotsTxt(robotsConfig),
     compress({
-      HTML: false,
+      HTML: {
+        'html-minifier-terser': {
+          minifyCSS: false,
+          removeComments: true,
+        },
+      },
     }),
   ],
 })
