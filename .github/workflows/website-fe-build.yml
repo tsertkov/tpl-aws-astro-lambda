@@ -1,13 +1,25 @@
 name: 'website-fe : build'
 
 on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Environment
+        required: true
+        default: stg
+        type: choice
+        options:
+          - stg
+          - prd
+      version:
+        description: Version
+        type: string
   workflow_call:
     inputs:
       env:
         required: true
         type: string
       version:
-        description: Version to build
         type: string
         required: true
   pull_request:
@@ -40,7 +52,7 @@ jobs:
       - name: Init dependencies
         run: make website-fe-init-test
       - name: Build frontend
-        run: make website-fe-build ENV=${{ inputs.env || 'stg' }} VERSION=${{ inputs.version || 'dev' }}
+        run: make website-fe-build ENV=${{ inputs.env || 'stg' }} VERSION=${{ inputs.version || '*' }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

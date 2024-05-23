@@ -1,4 +1,4 @@
-name: 'package : deploy'
+name: '__ package : deploy'
 
 permissions:
   id-token: write

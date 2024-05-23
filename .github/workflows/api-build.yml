@@ -9,11 +9,9 @@ on:
   workflow_call:
     inputs:
       env:
-        description: 'Environment to deploy to'
         type: string
         required: true
       version:
-        description: 'Version to build'
         type: string
         required: true
         default: dev
@@ -28,7 +26,7 @@ on:
           - stg
           - prd
       version:
-        description: 'Version to build'
+        description: Version
         type: string
         required: true
         default: dev

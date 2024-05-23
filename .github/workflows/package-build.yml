@@ -1,5 +1,4 @@
-
-name: 'package : build'
+name: '__ package : build'
 
 permissions:
   id-token: write
@@ -9,11 +8,9 @@ on:
   workflow_call:
     inputs:
       env:
-        description: Environment to deploy to
         type: string
         required: true
       version:
-        description: Version to build
         type: string
         required: true
 

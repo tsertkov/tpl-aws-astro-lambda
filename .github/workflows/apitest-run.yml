@@ -21,6 +21,7 @@ on:
   workflow_dispatch:
     inputs:
       env:
+        description: Environment
         required: true
         default: stg
         type: choice
@@ -28,6 +29,7 @@ on:
           - stg
           - prd
       version:
+        description: Version
         type: string
 
 jobs:

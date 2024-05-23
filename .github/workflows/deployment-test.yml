@@ -2,6 +2,19 @@ name: 'deployment : test'
 run-name: Test deployment for ${{ inputs.env || 'stg' }}
 
 on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Environment
+        required: true
+        default: stg
+        type: choice
+        options:
+          - stg
+          - prd
+      version:
+        description: Version
+        type: string
   workflow_call:
     inputs:
       env:
@@ -16,10 +29,10 @@ jobs:
     uses: ./.github/workflows/apitest-run.yml
     with:
       env: ${{ inputs.env }}
-      version: ${{ inputs.version }}
+      version: ${{ inputs.version || '*' }}
   run-e2etest:
     name: e2etest-${{ inputs.env }}
     uses: ./.github/workflows/e2etest-run.yml
     with:
       env: ${{ inputs.env }}
-      version: ${{ inputs.version }}
+      version: ${{ inputs.version || '*' }}

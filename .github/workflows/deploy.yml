@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       env:
+        description: Environment
         required: true
         type: choice
         default: stg
