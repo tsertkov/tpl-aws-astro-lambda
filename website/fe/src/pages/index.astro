@@ -8,24 +8,58 @@ const siteHostname = Astro.site?.hostname
 
 const {
   env,
+  version,
+  apiUrl,
 } = config.custom
 ---
 
 <Layout title="Hello world!">
   <main class="flex flex-center">
+    <div style="width: 100%">
+      <h1 style="text-align: center">tpl-aws-astro-lambda</h1>
+    </div>
     <MsgBox classNames={['whitebox']}>
-      <h1>tpl-aws-astro-lambda</h1>
+      <h1>Server vars (pre-rendered tpl)</h1>
       <ul>
         <li>SiteUrl: <a href={siteUrl} title={siteHostname}>{siteUrl}</a></li>
         <li>SiteHostname: {siteHostname}</li>
         <li>Environment: {env}</li>
+        <li>Api url: {apiUrl}</li>
       </ul>
+    </MsgBox>
+    <MsgBox classNames={['whitebox']}>
+      <h1>Dynamic vars (client-side js)</h1>
+      <ul id="list-vars"></ul>
+    </MsgBox>
+    <MsgBox classNames={['whitebox']}>
+      <h1>Api response</h1>
+      <ul id="list-api"></ul>
     </MsgBox>
   </main>
 </Layout>
 
+<script define:vars={{ config: config.custom }}>
+  const list = document.getElementById('list-vars')
+  list.innerHTML += `<li>Environment: ${config.env}</li>`
+  list.innerHTML += `<li>Version: ${config.version}</li>`
+  list.innerHTML += `<li>Api url: ${config.apiUrl}</li>`
+
+  fetch(`${config.apiUrl}/statusz`)
+    .then(response => response.json())
+    .then(data => {
+      const listApi = document.getElementById('list-api')
+      listApi.innerHTML += `<li>GET /statusz: ${JSON.stringify(data)}</li>`
+    })
+    .catch(error => console.error('Error:', error))
+</script>
+
 <style>
   main {
     height: 100vh;
+
+    h1 {
+      font-size: 1.6em;
+      margin-bottom: 26px;
+    }
   }
 </style>
