@@ -25,7 +25,7 @@ const copyrightYears = ((copyrightYearStart) => {
 
 // render debug version label for non-production environments
 const lblDebugVersion = config.custom.env !== 'prd'
-  ? `${config.custom.env}`
+  ? `${config.custom.env}:${config.custom.version}`
   : ''
 ---
 
