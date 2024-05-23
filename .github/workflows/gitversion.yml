@@ -1,4 +1,4 @@
-name: 'gitversion'
+name: '__ gitversion'
 
 on:
   workflow_call:
