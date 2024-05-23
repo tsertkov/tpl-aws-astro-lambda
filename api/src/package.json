@@ -7,7 +7,7 @@
         "eslint:check": "eslint .",
         "prettier:fix": "prettier --write .",
         "eslint:fix": "eslint --fix .",
-        "test:unit": "c8 --check-coverage --lines 100 --all -x eslint.config.js -x src/test/ node --test-reporter spec --test",
+        "test:unit": "VERSION=local ENV=local c8 --check-coverage --lines 100 --all -x eslint.config.js -x src/test/ node --test-reporter spec --test",
         "test": "npm run prettier:check && npm run eslint:check && npm run test:unit",
         "format": "npm run prettier:fix && npm run eslint:fix"
     },

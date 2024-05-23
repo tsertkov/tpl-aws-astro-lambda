@@ -1,8 +1,9 @@
-const { REG_NAME } = process.env
 import { Status } from '../../lib/services/status.mjs'
 
 const status = new Status({
-  region: REG_NAME,
+  region: process.env.REGION,
+  env: process.env.ENV,
+  version: process.env.VERSION,
 })
 
 /**
