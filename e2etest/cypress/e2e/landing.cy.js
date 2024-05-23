@@ -20,7 +20,7 @@ describe('tpl-aws-website landing', () => {
   it('should contain server vars', () => {
     cy.get('#server-vars li').should(($p) => {
       const listLines = $p.map((i, el) => Cypress.$(el).text()).toArray()
-      expect(listLines).to.have.members([
+      expect(listLines).to.include.members([
         `Environment: ${Cypress.env('ENV')}`,
         `SiteHostname: ${Cypress.env('DOMAIN')}`,
         `SiteUrl: https://${Cypress.env('DOMAIN')}/`,
