@@ -17,8 +17,8 @@ describe('tpl-aws-website landing', () => {
     cy.get('h1').should('contain', 'tpl-aws-astro')
   })
 
-  it('should contain environment details', () => {
-    cy.get('ul li').should(($p) => {
+  it('should contain server vars', () => {
+    cy.get('#server-vars li').should(($p) => {
       const listLines = $p.map((i, el) => Cypress.$(el).text()).toArray()
       expect(listLines).to.have.members([
         `Environment: ${Cypress.env('ENV')}`,
