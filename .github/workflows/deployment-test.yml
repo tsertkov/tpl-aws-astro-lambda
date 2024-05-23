@@ -1,4 +1,5 @@
 name: 'deployment : test'
+run-name: Test deployment for ${{ inputs.env || 'stg' }}
 
 on:
   workflow_call:

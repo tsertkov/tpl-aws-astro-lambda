@@ -32,6 +32,7 @@ on:
 
 jobs:
   run-apitest:
+    name: apitest-${{ inputs.env || 'stg' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
