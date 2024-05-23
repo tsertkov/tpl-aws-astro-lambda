@@ -1,4 +1,5 @@
 name: 'apitest : run'
+run-name: Run apitest for ${{ inputs.env || 'stg' }}
 
 on:
   pull_request:
@@ -46,4 +47,4 @@ jobs:
           cache-dependency-path: apitest/package-lock.json
           node-version-file: apitest/package.json
       - run: make apitest-init
-      - run: make apitest-run ENV=${{ inputs.env || 'stg' }} VERSION=${{ inputs.version || 'dev' }}
+      - run: make apitest-run ENV=${{ inputs.env || 'stg' }} VERSION=${{ inputs.version || '*' }}
