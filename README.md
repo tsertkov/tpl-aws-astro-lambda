@@ -10,6 +10,8 @@ A monorepo template for an AWS-hosted, Astro-generated static website with an AP
 ## Table of Contents
 
 - [Infrastructure and Flow Diagrams](#infrastructure-and-flow-diagram)
+  - [App Infrastructure](#app-infrastructure)
+  - [Deployer Infrastructure](#deployer-infrastructure)
 - [Monorepo Layout](#monorepo-layout)
 - [Installation](#installation)
 - [Usage](#usage)
