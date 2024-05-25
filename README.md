@@ -9,17 +9,25 @@ A monorepo template for an AWS-hosted, Astro-generated static website with an AP
 
 ## Table of Contents
 
-- [Infrastructure and Flow Diagram](#infrastructure-and-flow-diagram)
+- [Infrastructure and Flow Diagrams](#infrastructure-and-flow-diagram)
 - [Monorepo Layout](#monorepo-layout)
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
 
-## Infrastructure and Flow Diagram
+## Infrastructure and Flow Diagrams
 
-A high-level infrastructure diagram illustrating service integrations and user flows.
+### App Infrastructure
 
-![Infrastructure Diagram](docs/assets/infra-diagram.svg)
+A high-level App infrastructure diagram illustrating service integrations and user flows.
+
+![Infrastructure Diagram](docs/assets/infra-diagram-App.svg)
+
+### Deployer Infrastructure
+
+A high-level Deployer infrastructure diagram illustrating service integrations and developer flows.
+
+![Deployer Diagram](docs/assets/infra-diagram-Deployer.svg)
 
 Learn more infrastructure details from [the documentation](docs/infrastructure.md).
 
@@ -52,8 +60,12 @@ Start with deploying AWS shared resources and deploy infrastructure for `stg` an
 ```sh
 make infra-deploy-certificate
 make infra-deploy-github-oidc
-make infra-deploy ENV=stg
-make infra-deploy ENV=prd
+make deployer-infra ENV=stg
+make api-build ENV=stg VERSION=local
+make api-deploy ENV=stg
+make website-infra-deploy ENV=stg
+make website-fe-build ENV=stg
+make website-fe-deploy ENV=stg
 ```
 
 Update `s3bucket` and `cloudfrontId` in `config.json` with values returned in stack outputs.
@@ -68,8 +80,9 @@ To enable the deployment workflow, configure the following Environments and Envi
 - **Environment variables:**
   - `AWS_REGION` - AWS region environment is deployed to
   - `AWS_ROLE` - AWS CI/CD Role ARN
+  - `SOURCE_BUCKET` - S3 bucket for deployment packages
 
-Use `CDRoleArn` value from `infra-deploy` outputs to update `AWS_ROLE` environment variable for a corresponding environment in repository settings.
+Use `CICDRoleArn` and `SourceBucket` values from `make deployer-infra` outputs to update `AWS_ROLE` and `SOURCE_BUCKET` environment variables for a corresponding environment in repository settings.
 
 ## Usage
 
