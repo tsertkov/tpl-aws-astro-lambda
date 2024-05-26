@@ -17,10 +17,11 @@
         "eslint:check": "eslint ."
     },
     "devDependencies": {
+        "@picocss/pico": "^2.0.6",
         "astro": "^4.8.7",
         "astro-compress": "^2.2.23",
         "astro-robots-txt": "^1.0.0",
-        "prettier": "^3.2.5",
-        "eslint": "^9.2.0"
+        "eslint": "^9.2.0",
+        "prettier": "^3.2.5"
     }
 }

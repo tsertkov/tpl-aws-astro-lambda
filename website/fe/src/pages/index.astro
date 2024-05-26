@@ -1,6 +1,5 @@
 ---
 import Layout from '@/layouts/Layout.astro'
-import MsgBox from '@/components/MsgBox.astro'
 import config from '../../astro.config.mjs'
 
 const siteUrl = Astro.site?.href
@@ -14,35 +13,34 @@ const {
 ---
 
 <Layout title="Hello world!">
-  <main class="flex flex-center">
-    <div style="width: 100%">
-      <h1 style="text-align: center">tpl-aws-astro-lambda</h1>
-    </div>
-    <MsgBox classNames={['whitebox']}>
+  <section>
+    <header>
       <h1>Server vars (pre-rendered tpl)</h1>
+    </header>
+    <p>
       <ul id="server-vars">
         <li>SiteUrl: <a href={siteUrl} title={siteHostname}>{siteUrl}</a></li>
         <li>SiteHostname: {siteHostname}</li>
         <li>Environment: {env}</li>
         <li>Api url: {apiUrl}</li>
       </ul>
-    </MsgBox>
-    <MsgBox classNames={['whitebox']}>
-      <h1>Dynamic vars (client-side js)</h1>
+  </section>
+  <section>
+    <header>
+      <h1>Client vars (pre-rendered js)</h1>
+    </header>
+    <p>
       <ul id="list-vars"></ul>
-    </MsgBox>
-    <div class="flex flex-center" style="flex: 1 0 100%">
-      <MsgBox classNames={['whitebox']}>
-        <h1>Api response</h1>
-        <ul>
-          <li>Api url: {apiUrl}</li>
-        </ul>
-        <ul id="list-api">
-          <li>GET /statusz: ...</li>
-        </ul>
-      </MsgBox>
-    </div>
-  </main>
+  </section>
+  <section>
+    <header>
+      <h1>Api response</h1>
+    </header>
+    <p>
+      <ul id="list-api">
+        <li>GET /statusz: ...</li>
+      </ul>
+  </section>
 </Layout>
 
 <script define:vars={{ config: config.custom }}>
@@ -60,13 +58,3 @@ const {
     .catch(error => console.error('Error:', error))
 </script>
 
-<style>
-  main {
-    height: 100vh;
-
-    h1 {
-      font-size: 1.6em;
-      margin-bottom: 26px;
-    }
-  }
-</style>

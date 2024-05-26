@@ -1,7 +1,5 @@
 ---
-import '@/styles/vendor/preflight.css'
-import '@/styles/base.css'
-import '@/styles/utilities.css'
+import '@picocss/pico/css/pico.classless.min.css'
 import favicon from '@/assets/favicon.svg'
 import config from '@/../astro.config.mjs'
 
@@ -38,44 +36,20 @@ const lblDebugVersion = config.custom.env !== 'prd'
     <meta name="description" content="tpl-aws-awstro template repository" />
     { noindex && <meta name="robots" content="noindex" /> }
     <link rel="icon" type="image/svg+xml" href={favicon.src} />
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+    />
   </head>
-  <!-- tabindex enables hover on tap on iOS Safari -->
-  <body tabindex="0">
-    <slot />
+  <body>
+    <header><h1>tpl-aws-astro-lambda</h1></header>
+    <main>
+      <slot />
+    </main>
     <footer>
-      <div class="left">&copy; {copyrightYears} tpl-aws-astro-lambda</div>
-      <div class="right">{lblDebugVersion}</div>
+      <small>&copy; {copyrightYears} tpl-aws-astro-lambda</small>
+      <small>{lblDebugVersion}</small>
     </footer>
   </body>
 </html>
-
-<style is:global>
-:root {
-  --bg-1: hsl(183, 69%, 45%); /* Turquoise Blue */
-  --bg-2: hsl(44, 98%, 58%); /* Bright Saffron */
-  --bg-3: hsl(9, 100%, 64%);  /* Tomato */
-  --bg-gradient: linear-gradient(135deg, var(--bg-1), var(--bg-2) 64%, var(--bg-3) 100%);
-}
-
-  footer {
-    display: flex;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    padding: 0 6px 2px 6px;
-    font-weight: 300;
-    font-size: 12px;
-    color: #fff;
-  }
-
-  .left {
-    flex-grow: 1;
-    text-align: left;
-  }
-
-  .right {
-    flex-grow: 1;
-    text-align: right;
-  }
-</style>

@@ -1,18 +1,15 @@
-html,
-body {
-  color: #000;
+:root {
+  --bg-1: hsl(183, 69%, 45%); /* Turquoise Blue */
+  --bg-2: hsl(44, 98%, 58%); /* Bright Saffron */
+  --bg-3: hsl(9, 100%, 64%);  /* Tomato */
+  --bg-gradient: linear-gradient(135deg, var(--bg-1), var(--bg-2) 64%, var(--bg-3) 100%);
 }
 
 html {
-  font-family: system-ui, sans-serif;
-  background-color: rgb(var(--bg-1));
+  /*background-image: var(--bg-gradient);*/
+  min-height: 100vh;
 }
 
 body {
-  background-image: var(--bg-gradient);
-}
-
-@page {
-  size: A4 landscape;
-  margin: 0;
+  background: transparent;
 }
