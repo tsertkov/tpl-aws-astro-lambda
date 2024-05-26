@@ -43,6 +43,7 @@ deploy: \
 	@aws cloudfront create-invalidation --distribution-id $(CLOUDFRONT_ID) --paths "/*"
 
 build: \
-	assert-ENV
+	assert-ENV \
+	assert-VERSION
 	$(call _announce_target, $@)
-	@ENV="$(ENV)" $(MAKE) npm-run-build
+	@ENV="$(ENV)" VERSION="$(VERSION)" $(MAKE) npm-run-build

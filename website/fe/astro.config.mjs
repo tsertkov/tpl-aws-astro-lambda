@@ -3,9 +3,17 @@ import robotsTxt from 'astro-robots-txt'
 import compress from 'astro-compress'
 import config from '../../config.json'
 
+if (!process.env.ENV) {
+  throw new Error('Required environment variable is missing: ENV')
+}
+
+if (!process.env.VERSION) {
+  throw new Error('Required environment variable is missing: VERSION')
+}
+
 // environment aware configuration
-const ENV = process.env.ENV || 'stg'
-const VERSION = process.env.VERSION || 'dev'
+const ENV = process.env.ENV
+const VERSION = process.env.VERSION
 const domain = config[ENV]?.domain?.name || config.default.domain.name
 const apiDomain = `api.${domain}`
 const apiUrl = `https://${apiDomain}`
