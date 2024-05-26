@@ -1,7 +1,7 @@
 :root {
   --bg-1: hsl(183, 69%, 45%); /* Turquoise Blue */
   --bg-2: hsl(44, 98%, 58%); /* Bright Saffron */
-  --bg-3: hsl(9, 100%, 64%);  /* Tomato */
+  --bg-3: hsl(9, 100%, 64%); /* Tomato */
   --bg-gradient: linear-gradient(135deg, var(--bg-1), var(--bg-2) 64%, var(--bg-3) 100%);
 }
 
