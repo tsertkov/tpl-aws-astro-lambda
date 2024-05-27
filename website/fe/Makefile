@@ -8,6 +8,7 @@ include $(ROOT_DIR)/.makefiles/Makefile.npm.mk
 
 # config vars
 ENV ?= stg
+VERSION ?= 0.0.0
 CONFIG_FILE = $(ROOT_DIR)/config.json
 
 define HELP_SCREEN
@@ -31,8 +32,8 @@ REGION := $(call read_config_var,2)
 REG_NAME = $(call aws_region_to_short_name,$(REGION))
 WEBSITE_STACK = $(PROJECT_NAME)-$(ENV)-$(REG_NAME)
 
-deploy: S3_BUCKET := $(call aws_cf_output,$(WEBSITE_STACK),$(REGION),WebBucket)
-deploy: CLOUDFRONT_ID := $(call aws_cf_output,$(WEBSITE_STACK),$(REGION),Distribution)
+deploy: S3_BUCKET ?= $(call aws_cf_output,$(WEBSITE_STACK),$(REGION),WebBucket)
+deploy: CLOUDFRONT_ID ?= $(call aws_cf_output,$(WEBSITE_STACK),$(REGION),Distribution)
 deploy: \
 	assert-ENV \
 	assert-S3_BUCKET \
