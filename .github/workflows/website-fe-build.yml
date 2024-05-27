@@ -22,10 +22,6 @@ on:
       version:
         type: string
         required: true
-  pull_request:
-    branches: ['main']
-    paths:
-      - 'website/fe/**'
 
 jobs:
   build-website-fe:
