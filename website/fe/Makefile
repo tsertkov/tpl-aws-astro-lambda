@@ -8,6 +8,7 @@ include $(ROOT_DIR)/.makefiles/Makefile.npm.mk
 
 # config vars
 ENV ?= stg
+VERSION ?= 0.0.0
 CONFIG_FILE = $(ROOT_DIR)/config.json
 
 define HELP_SCREEN
