@@ -1,4 +1,9 @@
 import { defineConfig } from 'cypress'
+
+// NB! using readFileSync instead of import since eslint does not suport
+// import with. Once it does, update the code below accordingly.
+// import config from '../config.json' with { type: 'json' }
+
 import { readFileSync } from 'fs'
 const config = JSON.parse(readFileSync('../config.json', 'utf8'))
 
