@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { createImportHandler } from './lib/create-import-handler.mjs'
 
 const defaultEnv = {
-  REGION: 'eu-central-1',
+  AWS_REGION: 'eu-central-1',
 }
 
 const importStatusHandler = createImportHandler('statusz', defaultEnv)
@@ -26,7 +26,7 @@ describe('status handler', () => {
 
   it('should return region', () => {
     const body = JSON.parse(response.body)
-    assert.equal(body.region, defaultEnv.REGION)
+    assert.equal(body.region, defaultEnv.AWS_REGION)
   })
 
   it('should return version', () => {
