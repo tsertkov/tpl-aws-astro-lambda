@@ -6,10 +6,19 @@
 }
 
 html {
-  /*background-image: var(--bg-gradient);*/
+  background-image: var(--bg-gradient);
   min-height: 100vh;
 }
 
 body {
   background: transparent;
+  padding: 0 1em;
+}
+
+body > * {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 1em;
+  padding: 1em !important;
 }
