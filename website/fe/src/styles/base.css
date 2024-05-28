@@ -22,3 +22,9 @@ body > * {
   margin: 1em;
   padding: 1em !important;
 }
+
+/* fix for dark theme light color applied by pico.css while dark theme */
+/* is disabled by data-theme attribute */
+footer {
+  color: var(--pico-color);
+}
