@@ -19,10 +19,10 @@ const {
     </header>
     <p>
       <ul id="server-vars">
-        <li>SiteUrl: <a href={siteUrl} title={siteHostname}>{siteUrl}</a></li>
-        <li>SiteHostname: {siteHostname}</li>
-        <li>Environment: {env}</li>
-        <li>Api url: {apiUrl}</li>
+        <li><b>SiteUrl:</b> <a href={siteUrl} title={siteHostname}>{siteUrl}</a></li>
+        <li><b>SiteHostname:</b> {siteHostname}</li>
+        <li><b>Environment:</b> {env}</li>
+        <li><b>Api url:</b> {apiUrl}</li>
       </ul>
   </section>
   <section>
@@ -38,22 +38,22 @@ const {
     </header>
     <p>
       <ul id="list-api">
-        <li>GET /statusz: ...</li>
+        <li><b>GET /statusz:</b> ...</li>
       </ul>
   </section>
 </Layout>
 
 <script define:vars={{ config: config.custom }}>
   const list = document.getElementById('list-vars')
-  list.innerHTML += `<li>Environment: ${config.env}</li>`
-  list.innerHTML += `<li>Version: ${config.version}</li>`
-  list.innerHTML += `<li>Api url: ${config.apiUrl}</li>`
+  list.innerHTML += `<li><b>Environment:</b> ${config.env}</li>`
+  list.innerHTML += `<li><b>Version:</b> ${config.version}</li>`
+  list.innerHTML += `<li><b>Api url:</b> ${config.apiUrl}</li>`
 
   fetch(`${config.apiUrl}/statusz`)
     .then(response => response.json())
     .then(data => {
       const listApi = document.getElementById('list-api')
-      listApi.innerHTML = `<li>GET /statusz: ${JSON.stringify(data)}</li>`
+      listApi.innerHTML = `<li><b>GET /statusz:</b> ${JSON.stringify(data)}</li>`
     })
     .catch(error => console.error('Error:', error))
 </script>
