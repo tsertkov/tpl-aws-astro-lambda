@@ -15,11 +15,11 @@
         "node": ">=20"
     },
     "devDependencies": {
-        "@types/aws-lambda": "^8.10.140",
+        "@types/aws-lambda": "^8.10.141",
         "aws-sdk-client-mock": "^4.0.1",
         "c8": "^10.1.2",
-        "esbuild": "^0.22.0",
-        "eslint": "^9.6.0",
-        "prettier": "^3.3.2"
+        "esbuild": "^0.23.0",
+        "eslint": "^9.7.0",
+        "prettier": "^3.3.3"
     }
 }
