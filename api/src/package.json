@@ -18,7 +18,7 @@
         "@types/aws-lambda": "^8.10.143",
         "aws-sdk-client-mock": "^4.0.1",
         "c8": "^10.1.2",
-        "esbuild": "^0.23.0",
+        "esbuild": "^0.23.1",
         "eslint": "^9.9.0",
         "prettier": "^3.3.3"
     }
