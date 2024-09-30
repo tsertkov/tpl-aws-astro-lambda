@@ -18,10 +18,10 @@
     },
     "devDependencies": {
         "@picocss/pico": "^2.0.6",
-        "astro": "^4.13.3",
+        "astro": "^4.15.9",
         "astro-compress": "^2.3.1",
         "astro-robots-txt": "^1.0.0",
-        "eslint": "^9.9.0",
+        "eslint": "^9.11.1",
         "prettier": "^3.3.3"
     }
 }
